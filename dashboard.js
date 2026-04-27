@@ -30,6 +30,15 @@ document.getElementById('sidebarCollapse').addEventListener('click', () => {
   mainContent.classList.toggle('expanded');
 });
 
+// Click logo icon when collapsed to re-expand
+document.querySelector('.sidebar-logo').addEventListener('click', (e) => {
+  if (sidebar.classList.contains('collapsed')) {
+    e.preventDefault();
+    sidebar.classList.remove('collapsed');
+    mainContent.classList.remove('expanded');
+  }
+});
+
 // ── Mobile sidebar ────────────────────────────────────────────────────────
 document.getElementById('mobileMenuBtn').addEventListener('click', () => {
   sidebar.classList.toggle('mobile-open');
@@ -44,26 +53,26 @@ document.getElementById('logoutBtn').addEventListener('click', (e) => {
 
 // ── Flight Data ───────────────────────────────────────────────────────────
 const flights = [
-  { id:1,  no:'AI 202',  airline:'Air India',  dest:'Mumbai',    gate:'B4',  sched:'06:15', est:'06:15', status:'on-time',  terminal:'T2', aircraft:'Boeing 737',  duration:'2h 10m' },
-  { id:2,  no:'6E 441',  airline:'IndiGo',     dest:'Delhi',     gate:'A12', sched:'06:45', est:'07:20', status:'delayed',  terminal:'T1', aircraft:'Airbus A320', duration:'2h 30m' },
-  { id:3,  no:'SG 118',  airline:'SpiceJet',   dest:'Bangalore', gate:'C7',  sched:'07:00', est:'07:00', status:'on-time',  terminal:'T1', aircraft:'Boeing 737',  duration:'1h 45m' },
-  { id:4,  no:'UK 995',  airline:'Vistara',    dest:'Chennai',   gate:'D2',  sched:'07:30', est:'07:30', status:'boarding', terminal:'T2', aircraft:'Airbus A320', duration:'1h 50m' },
-  { id:5,  no:'QP 301',  airline:'Akasa Air',  dest:'Hyderabad', gate:'A9',  sched:'07:55', est:'07:55', status:'cancelled',terminal:'T1', aircraft:'Boeing 737',  duration:'1h 20m' },
-  { id:6,  no:'AI 405',  airline:'Air India',  dest:'Kolkata',   gate:'B8',  sched:'08:10', est:'08:10', status:'on-time',  terminal:'T2', aircraft:'Airbus A321', duration:'2h 50m' },
-  { id:7,  no:'6E 552',  airline:'IndiGo',     dest:'Pune',      gate:'A3',  sched:'08:30', est:'09:00', status:'delayed',  terminal:'T1', aircraft:'Airbus A320', duration:'1h 10m' },
-  { id:8,  no:'SG 220',  airline:'SpiceJet',   dest:'Goa',       gate:'C2',  sched:'08:45', est:'08:45', status:'on-time',  terminal:'T1', aircraft:'Boeing 737',  duration:'1h 30m' },
-  { id:9,  no:'UK 102',  airline:'Vistara',    dest:'Mumbai',    gate:'D6',  sched:'09:00', est:'09:00', status:'boarding', terminal:'T2', aircraft:'Airbus A320', duration:'2h 10m' },
-  { id:10, no:'QP 215',  airline:'Akasa Air',  dest:'Jaipur',    gate:'A5',  sched:'09:15', est:'09:15', status:'on-time',  terminal:'T1', aircraft:'Boeing 737',  duration:'1h 40m' },
-  { id:11, no:'AI 611',  airline:'Air India',  dest:'Ahmedabad', gate:'B2',  sched:'09:30', est:'10:05', status:'delayed',  terminal:'T2', aircraft:'Airbus A319', duration:'1h 25m' },
-  { id:12, no:'6E 773',  airline:'IndiGo',     dest:'Srinagar',  gate:'A7',  sched:'09:45', est:'09:45', status:'on-time',  terminal:'T1', aircraft:'Airbus A320', duration:'3h 00m' },
-  { id:13, no:'SG 334',  airline:'SpiceJet',   dest:'Kochi',     gate:'C9',  sched:'10:00', est:'10:00', status:'on-time',  terminal:'T1', aircraft:'Boeing 737',  duration:'2h 30m' },
-  { id:14, no:'UK 781',  airline:'Vistara',    dest:'Delhi',     gate:'D1',  sched:'10:20', est:'10:20', status:'on-time',  terminal:'T2', aircraft:'Airbus A321', duration:'2h 30m' },
-  { id:15, no:'AI 822',  airline:'Air India',  dest:'Varanasi',  gate:'B6',  sched:'10:40', est:'10:40', status:'on-time',  terminal:'T2', aircraft:'Airbus A319', duration:'2h 00m' },
-  { id:16, no:'6E 901',  airline:'IndiGo',     dest:'Chandigarh',gate:'A11', sched:'11:00', est:'11:45', status:'delayed',  terminal:'T1', aircraft:'Airbus A320', duration:'2h 20m' },
-  { id:17, no:'QP 440',  airline:'Akasa Air',  dest:'Bhopal',    gate:'A4',  sched:'11:15', est:'11:15', status:'on-time',  terminal:'T1', aircraft:'Boeing 737',  duration:'1h 35m' },
-  { id:18, no:'SG 512',  airline:'SpiceJet',   dest:'Nagpur',    gate:'C4',  sched:'11:30', est:'11:30', status:'landed',   terminal:'T1', aircraft:'Boeing 737',  duration:'1h 15m' },
-  { id:19, no:'UK 334',  airline:'Vistara',    dest:'Bangalore', gate:'D9',  sched:'11:50', est:'11:50', status:'on-time',  terminal:'T2', aircraft:'Airbus A320', duration:'1h 45m' },
-  { id:20, no:'AI 199',  airline:'Air India',  dest:'Amritsar',  gate:'B10', sched:'12:10', est:'12:10', status:'cancelled',terminal:'T2', aircraft:'Airbus A319', duration:'2h 40m' },
+  { id: 1, no: 'AI 202', airline: 'Air India', dest: 'Mumbai', gate: 'B4', sched: '06:15', est: '06:15', status: 'on-time', terminal: 'T2', aircraft: 'Boeing 737', duration: '2h 10m' },
+  { id: 2, no: '6E 441', airline: 'IndiGo', dest: 'Delhi', gate: 'A12', sched: '06:45', est: '07:20', status: 'delayed', terminal: 'T1', aircraft: 'Airbus A320', duration: '2h 30m' },
+  { id: 3, no: 'SG 118', airline: 'SpiceJet', dest: 'Bangalore', gate: 'C7', sched: '07:00', est: '07:00', status: 'on-time', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 45m' },
+  { id: 4, no: 'UK 995', airline: 'Vistara', dest: 'Chennai', gate: 'D2', sched: '07:30', est: '07:30', status: 'boarding', terminal: 'T2', aircraft: 'Airbus A320', duration: '1h 50m' },
+  { id: 5, no: 'QP 301', airline: 'Akasa Air', dest: 'Hyderabad', gate: 'A9', sched: '07:55', est: '07:55', status: 'cancelled', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 20m' },
+  { id: 6, no: 'AI 405', airline: 'Air India', dest: 'Kolkata', gate: 'B8', sched: '08:10', est: '08:10', status: 'on-time', terminal: 'T2', aircraft: 'Airbus A321', duration: '2h 50m' },
+  { id: 7, no: '6E 552', airline: 'IndiGo', dest: 'Pune', gate: 'A3', sched: '08:30', est: '09:00', status: 'delayed', terminal: 'T1', aircraft: 'Airbus A320', duration: '1h 10m' },
+  { id: 8, no: 'SG 220', airline: 'SpiceJet', dest: 'Goa', gate: 'C2', sched: '08:45', est: '08:45', status: 'on-time', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 30m' },
+  { id: 9, no: 'UK 102', airline: 'Vistara', dest: 'Mumbai', gate: 'D6', sched: '09:00', est: '09:00', status: 'boarding', terminal: 'T2', aircraft: 'Airbus A320', duration: '2h 10m' },
+  { id: 10, no: 'QP 215', airline: 'Akasa Air', dest: 'Jaipur', gate: 'A5', sched: '09:15', est: '09:15', status: 'on-time', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 40m' },
+  { id: 11, no: 'AI 611', airline: 'Air India', dest: 'Ahmedabad', gate: 'B2', sched: '09:30', est: '10:05', status: 'delayed', terminal: 'T2', aircraft: 'Airbus A319', duration: '1h 25m' },
+  { id: 12, no: '6E 773', airline: 'IndiGo', dest: 'Srinagar', gate: 'A7', sched: '09:45', est: '09:45', status: 'on-time', terminal: 'T1', aircraft: 'Airbus A320', duration: '3h 00m' },
+  { id: 13, no: 'SG 334', airline: 'SpiceJet', dest: 'Kochi', gate: 'C9', sched: '10:00', est: '10:00', status: 'on-time', terminal: 'T1', aircraft: 'Boeing 737', duration: '2h 30m' },
+  { id: 14, no: 'UK 781', airline: 'Vistara', dest: 'Delhi', gate: 'D1', sched: '10:20', est: '10:20', status: 'on-time', terminal: 'T2', aircraft: 'Airbus A321', duration: '2h 30m' },
+  { id: 15, no: 'AI 822', airline: 'Air India', dest: 'Varanasi', gate: 'B6', sched: '10:40', est: '10:40', status: 'on-time', terminal: 'T2', aircraft: 'Airbus A319', duration: '2h 00m' },
+  { id: 16, no: '6E 901', airline: 'IndiGo', dest: 'Chandigarh', gate: 'A11', sched: '11:00', est: '11:45', status: 'delayed', terminal: 'T1', aircraft: 'Airbus A320', duration: '2h 20m' },
+  { id: 17, no: 'QP 440', airline: 'Akasa Air', dest: 'Bhopal', gate: 'A4', sched: '11:15', est: '11:15', status: 'on-time', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 35m' },
+  { id: 18, no: 'SG 512', airline: 'SpiceJet', dest: 'Nagpur', gate: 'C4', sched: '11:30', est: '11:30', status: 'landed', terminal: 'T1', aircraft: 'Boeing 737', duration: '1h 15m' },
+  { id: 19, no: 'UK 334', airline: 'Vistara', dest: 'Bangalore', gate: 'D9', sched: '11:50', est: '11:50', status: 'on-time', terminal: 'T2', aircraft: 'Airbus A320', duration: '1h 45m' },
+  { id: 20, no: 'AI 199', airline: 'Air India', dest: 'Amritsar', gate: 'B10', sched: '12:10', est: '12:10', status: 'cancelled', terminal: 'T2', aircraft: 'Airbus A319', duration: '2h 40m' },
 ];
 
 // ── Pagination ────────────────────────────────────────────────────────────
@@ -72,7 +81,7 @@ let currentPage = 1;
 let filteredFlights = [...flights];
 
 function getStatusLabel(s) {
-  return { 'on-time':'On Time', 'delayed':'Delayed', 'boarding':'Boarding', 'cancelled':'Cancelled', 'landed':'Landed' }[s] || s;
+  return { 'on-time': 'On Time', 'delayed': 'Delayed', 'boarding': 'Boarding', 'cancelled': 'Cancelled', 'landed': 'Landed' }[s] || s;
 }
 
 function renderTable() {
@@ -125,7 +134,7 @@ function applyFilters() {
       f.no.toLowerCase().includes(search) ||
       f.dest.toLowerCase().includes(search) ||
       f.airline.toLowerCase().includes(search);
-    const matchStatus  = status  === 'all' || f.status  === status;
+    const matchStatus = status === 'all' || f.status === status;
     const matchAirline = airline === 'all' || f.no.startsWith(airline);
     return matchSearch && matchStatus && matchAirline;
   });

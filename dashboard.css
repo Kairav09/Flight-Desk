@@ -64,13 +64,16 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .sidebar-collapse {
-  background: none; border: 1px solid var(--border); border-radius: 6px;
+  background: var(--surface2); border: 1px solid var(--border); border-radius: 6px;
   color: var(--muted); cursor: pointer; padding: 5px;
   display: flex; align-items: center; justify-content: center;
-  transition: color .2s, border-color .2s;
+  transition: color .2s, border-color .2s; flex-shrink: 0;
+  width: 28px; height: 28px;
 }
 .sidebar-collapse svg { transition: transform .3s; }
 .sidebar-collapse:hover { color: var(--text); border-color: var(--border2); }
+.sidebar.collapsed .sidebar-collapse { display: none; }
+.sidebar.collapsed .sidebar-header { justify-content: center; }
 
 .sidebar-nav {
   flex: 1; padding: 16px 10px; display: flex; flex-direction: column; gap: 2px;
