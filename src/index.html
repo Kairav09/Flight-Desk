@@ -14,28 +14,75 @@
   </head>
   <body>
     <!-- Animated Flight Paths Background -->
-    <svg class="flight-paths" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      class="flight-paths"
+      viewBox="0 0 1440 900"
+      preserveAspectRatio="xMidYMid slice"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
-        <filter id="glow"><feGaussianBlur stdDeviation="1.5" result="g"/><feMerge><feMergeNode in="g"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="1.5" result="g" />
+          <feMerge>
+            <feMergeNode in="g" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       <!-- Path 1: bottom-left to top-right -->
-      <path class="fp fp-1" d="M-50 750 Q 400 200, 900 100" fill="none"/>
-      <circle class="fp-dot fp-dot-1" r="3"><animateMotion dur="8s" repeatCount="indefinite" path="M-50 750 Q 400 200, 900 100"/></circle>
+      <path class="fp fp-1" d="M-50 750 Q 400 200, 900 100" fill="none" />
+      <circle class="fp-dot fp-dot-1" r="3">
+        <animateMotion
+          dur="8s"
+          repeatCount="indefinite"
+          path="M-50 750 Q 400 200, 900 100"
+        />
+      </circle>
       <!-- Path 2: left to right mid -->
-      <path class="fp fp-2" d="M-80 400 Q 500 50, 1100 350" fill="none"/>
-      <circle class="fp-dot fp-dot-2" r="2.5"><animateMotion dur="10s" repeatCount="indefinite" path="M-80 400 Q 500 50, 1100 350"/></circle>
+      <path class="fp fp-2" d="M-80 400 Q 500 50, 1100 350" fill="none" />
+      <circle class="fp-dot fp-dot-2" r="2.5">
+        <animateMotion
+          dur="10s"
+          repeatCount="indefinite"
+          path="M-80 400 Q 500 50, 1100 350"
+        />
+      </circle>
       <!-- Path 3: top-left to bottom-right -->
-      <path class="fp fp-3" d="M200 -50 Q 700 500, 1500 300" fill="none"/>
-      <circle class="fp-dot fp-dot-3" r="2"><animateMotion dur="12s" repeatCount="indefinite" path="M200 -50 Q 700 500, 1500 300"/></circle>
+      <path class="fp fp-3" d="M200 -50 Q 700 500, 1500 300" fill="none" />
+      <circle class="fp-dot fp-dot-3" r="2">
+        <animateMotion
+          dur="12s"
+          repeatCount="indefinite"
+          path="M200 -50 Q 700 500, 1500 300"
+        />
+      </circle>
       <!-- Path 4: right to left upper -->
-      <path class="fp fp-4" d="M1500 150 Q 900 -100, 100 200" fill="none"/>
-      <circle class="fp-dot fp-dot-4" r="2.5"><animateMotion dur="9s" repeatCount="indefinite" path="M1500 150 Q 900 -100, 100 200"/></circle>
+      <path class="fp fp-4" d="M1500 150 Q 900 -100, 100 200" fill="none" />
+      <circle class="fp-dot fp-dot-4" r="2.5">
+        <animateMotion
+          dur="9s"
+          repeatCount="indefinite"
+          path="M1500 150 Q 900 -100, 100 200"
+        />
+      </circle>
       <!-- Path 5: bottom to top -->
-      <path class="fp fp-5" d="M600 950 Q 300 500, 500 50" fill="none"/>
-      <circle class="fp-dot fp-dot-5" r="2"><animateMotion dur="11s" repeatCount="indefinite" path="M600 950 Q 300 500, 500 50"/></circle>
+      <path class="fp fp-5" d="M600 950 Q 300 500, 500 50" fill="none" />
+      <circle class="fp-dot fp-dot-5" r="2">
+        <animateMotion
+          dur="11s"
+          repeatCount="indefinite"
+          path="M600 950 Q 300 500, 500 50"
+        />
+      </circle>
       <!-- Path 6: wide arc across -->
-      <path class="fp fp-6" d="M-100 600 Q 720 -100, 1500 500" fill="none"/>
-      <circle class="fp-dot fp-dot-6" r="3"><animateMotion dur="14s" repeatCount="indefinite" path="M-100 600 Q 720 -100, 1500 500"/></circle>
+      <path class="fp fp-6" d="M-100 600 Q 720 -100, 1500 500" fill="none" />
+      <circle class="fp-dot fp-dot-6" r="3">
+        <animateMotion
+          dur="14s"
+          repeatCount="indefinite"
+          path="M-100 600 Q 720 -100, 1500 500"
+        />
+      </circle>
     </svg>
 
     <!-- Navbar -->
@@ -467,7 +514,6 @@
             <input
               type="password"
               id="loginPassword"
-              placeholder="••••••••"
               required
               autocomplete="current-password"
             />
