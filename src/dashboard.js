@@ -348,13 +348,13 @@ function renderTable() {
         (f, i) => `
       <tr onclick="openQuickPanel(${f.id})" style="animation-delay:${i * 0.045}s">
         ${FLIGHT_COLUMNS
-          .map((column) => {
-            const className = typeof column.className === "function"
-              ? column.className(f)
-              : column.className || "";
-            return `<td class="${className}">${column.render(f)}</td>`;
-          })
-          .join("")}
+            .map((column) => {
+              const className = typeof column.className === "function"
+                ? column.className(f)
+                : column.className || "";
+              return `<td class="${className}">${column.render(f)}</td>`;
+            })
+            .join("")}
         <td class="td-actions"><button class="view-btn" onclick="event.stopPropagation();openQuickPanel(${f.id})">View →</button></td>
       </tr>
     `,
@@ -470,12 +470,37 @@ function toggleSubscription(id, btn) {
     subscribed = subscribed.filter((x) => x !== id);
     btn.textContent = "Subscribe to alerts";
     btn.style.opacity = "1";
+    showToast(false);
   } else {
     subscribed.push(id);
     btn.textContent = "Unsubscribe";
     btn.style.opacity = "0.7";
+    showToast(true);
   }
   localStorage.setItem("fd_subscribed", JSON.stringify(subscribed));
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────────
+let toastTimer = null;
+function showToast(subscribed) {
+  const toast = document.getElementById('subscribeToast');
+  const title = document.getElementById('toastTitle');
+  const msg = document.getElementById('toastMsg');
+  if (subscribed) {
+    toast.classList.remove('unsubscribed');
+    title.textContent = '🔔 Subscribed!';
+    msg.textContent = "You'll receive alerts for gate changes, delays, and boarding calls.";
+  } else {
+    toast.classList.add('unsubscribed');
+    title.textContent = 'Unsubscribed';
+    msg.textContent = "You won't receive any more alerts for this flight.";
+  }
+  toast.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => hideToast(), 4000);
+}
+function hideToast() {
+  document.getElementById('subscribeToast').classList.remove('show');
 }
 
 // ── Auto-refresh simulation (every 30s updates "last updated") ────────────

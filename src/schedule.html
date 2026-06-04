@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schedule – FlightDesk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="dashboard.css" />
+  <style>
+    /* ── Schedule-specific styles ─────────────────────────────────────── */
+
+    .schedule-layout {
+      display: flex; flex-direction: column; gap: 24px;
+    }
+
+    /* ── Heatmap Card ───────────────────────────────────────────────── */
+    .heatmap-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 24px 28px;
+    }
+    .heatmap-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .heatmap-header h2 {
+      font-family: var(--font-h); font-size: 1rem; font-weight: 700;
+    }
+    .heatmap-nav {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .heatmap-month {
+      font-family: var(--font-h); font-size: .9rem; font-weight: 700;
+      min-width: 140px; text-align: center;
+    }
+    .heatmap-nav-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 7px; color: var(--muted); cursor: pointer;
+      width: 30px; height: 30px; display: flex; align-items: center;
+      justify-content: center; transition: all .2s;
+    }
+    .heatmap-nav-btn:hover { color: var(--text); border-color: var(--cyan); }
+
+    .heatmap-legend {
+      display: flex; align-items: center; gap: 6px; font-size: .72rem; color: var(--muted);
+    }
+    .legend-cells { display: flex; gap: 3px; }
+    .legend-cell {
+      width: 12px; height: 12px; border-radius: 3px;
+    }
+
+    /* Day-of-week labels */
+    .heatmap-dow {
+      display: grid; grid-template-columns: 32px repeat(7, 1fr);
+      gap: 3px; margin-bottom: 4px;
+    }
+    .heatmap-dow span {
+      font-size: .68rem; color: var(--muted); text-align: center;
+      font-family: var(--font-h); letter-spacing: .04em;
+    }
+
+    /* Grid */
+    .heatmap-grid {
+      display: flex; gap: 3px;
+    }
+    .heatmap-week {
+      display: flex; flex-direction: column; gap: 3px; flex: 1;
+    }
+    .heatmap-row-label {
+      font-size: .68rem; color: var(--muted); width: 32px;
+      display: flex; align-items: center; font-family: var(--font-h);
+    }
+    .heatmap-cell {
+      aspect-ratio: 1; border-radius: 4px; cursor: pointer;
+      transition: transform .15s, box-shadow .15s, outline .15s;
+      position: relative;
+      min-height: 20px;
+    }
+    .heatmap-cell:hover {
+      transform: scale(1.2); z-index: 10;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    .heatmap-cell.selected {
+      outline: 2px solid var(--cyan);
+      outline-offset: 1px;
+      transform: scale(1.15);
+    }
+    .heatmap-cell.today {
+      outline: 2px solid rgba(255,255,255,0.4);
+      outline-offset: 1px;
+    }
+    .heatmap-cell.today.selected {
+      outline: 2px solid var(--cyan);
+    }
+    .heatmap-cell.empty { cursor: default; background: transparent !important; }
+    .heatmap-cell.empty:hover { transform: none; box-shadow: none; }
+
+    /* Heat levels */
+    .heat-0 { background: var(--surface2); }
+    .heat-1 { background: rgba(245,158,11,0.2); }
+    .heat-2 { background: rgba(245,158,11,0.38); }
+    .heat-3 { background: rgba(245,158,11,0.58); }
+    .heat-4 { background: rgba(245,158,11,0.78); }
+    .heat-5 { background: rgba(245,158,11,0.95); }
+
+    /* Tooltip */
+    .cell-tooltip {
+      position: fixed; z-index: 100;
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px;
+      font-size: .75rem; pointer-events: none; display: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      white-space: nowrap;
+    }
+    .cell-tooltip .tt-date { font-family: var(--font-h); font-weight: 700; margin-bottom: 2px; }
+    .cell-tooltip .tt-count { color: var(--cyan); font-weight: 600; }
+
+    /* ── Timeline Card ──────────────────────────────────────────────── */
+    .timeline-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .timeline-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; border-bottom: 1px solid var(--border);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .timeline-header-left { display: flex; align-items: center; gap: 12px; }
+    .timeline-header h2 {
+      font-family: var(--font-h); font-size: 1rem; font-weight: 700;
+    }
+    .selected-date-badge {
+      background: var(--cyan-dim); border: 1px solid rgba(245,158,11,0.25);
+      border-radius: 100px; padding: 4px 12px;
+      font-size: .75rem; font-weight: 600; color: var(--cyan);
+      font-family: var(--font-h);
+    }
+    .timeline-summary {
+      display: flex; gap: 16px; font-size: .78rem;
+    }
+    .tl-stat { display: flex; align-items: center; gap: 5px; color: var(--muted); }
+    .tl-stat strong { color: var(--text); font-family: var(--font-h); }
+
+    .timeline-body { padding: 0 24px 24px; }
+    .timeline-empty {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 12px; padding: 60px 24px; color: var(--muted); text-align: center;
+    }
+    .timeline-empty p { font-size: .9rem; }
+    .timeline-empty span { font-size: .8rem; }
+
+    /* Hour block */
+    .hour-block { margin-top: 24px; }
+    .hour-label {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 10px;
+    }
+    .hour-label span {
+      font-family: var(--font-h); font-size: .75rem; font-weight: 700;
+      color: var(--cyan); letter-spacing: .06em; white-space: nowrap;
+    }
+    .hour-label::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* Flight card in timeline */
+    .tl-flight-card {
+      display: grid;
+      grid-template-columns: 90px 1fr 80px 100px 120px;
+      align-items: center; gap: 16px;
+      padding: 14px 18px; border-radius: 10px;
+      background: var(--surface2); border: 1px solid var(--border);
+      margin-bottom: 8px; cursor: pointer;
+      transition: border-color .2s, transform .15s, background .2s;
+      animation: cardIn .3s ease both;
+    }
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .tl-flight-card:hover {
+      border-color: rgba(245,158,11,0.25);
+      background: var(--surface3);
+      transform: translateX(4px);
+    }
+    .tl-flight-no {
+      font-family: var(--font-h); font-weight: 800; font-size: .95rem;
+    }
+    .tl-route { display: flex; flex-direction: column; gap: 2px; }
+    .tl-dest { font-weight: 600; font-size: .9rem; }
+    .tl-airline { font-size: .75rem; color: var(--muted); }
+    .tl-time {
+      font-family: var(--font-h); font-size: .9rem; font-weight: 600;
+      color: var(--text);
+    }
+    .tl-gate {
+      font-family: var(--font-h); font-weight: 700; font-size: .85rem;
+      color: var(--cyan);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .tl-flight-card { grid-template-columns: 70px 1fr 70px; }
+      .tl-flight-card .tl-gate,
+      .tl-flight-card .status-badge { display: none; }
+      .heatmap-card { padding: 18px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navbar (copied from dashboard) ─────────────────────────────────── -->
+  <nav class="topnav" id="topnav">
+    <div class="topnav-inner">
+      <a href="dashboard.html" class="topnav-logo">
+        <div class="logo-mark">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" fill="currentColor"/>
+          </svg>
+        </div>
+        <span class="logo-text">Flight<span class="logo-accent">Desk</span></span>
+      </a>
+      <div class="topnav-links">
+        <a href="dashboard.html" class="topnav-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="2"/></svg>
+          Dashboard
+        </a>
+        <a href="flight-detail.html" class="topnav-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" stroke="currentColor" stroke-width="1.5"/></svg>
+          Flights
+        </a>
+        <a href="map.html" class="topnav-link">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="10" r="3" stroke="currentColor" stroke-width="2"/></svg>
+          Route Map
+        </a>
+        <a href="schedule.html" class="topnav-link active">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          Schedule
+        </a>
+      </div>
+      <div class="topnav-right">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          Live
+        </div>
+        <div class="header-clock" id="headerClock"></div>
+        <button class="topnav-icon-btn" title="Notifications" onclick="window.location.href='notifications.html'">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <span class="icon-badge">3</span>
+        </button>
+        <div class="user-menu" id="userMenu">
+          <button class="user-avatar-btn" id="userAvatarBtn">
+            <span class="user-avatar" id="userAvatar">?</span>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dropdown-info">
+              <div class="udd-name" id="userName">Loading…</div>
+              <div class="udd-role">Passenger</div>
+            </div>
+            <div class="user-dropdown-sep"></div>
+            <a href="profile.html" class="user-dropdown-item">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+              Profile
+            </a>
+            <a href="#" class="user-dropdown-item logout-item" id="logoutBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Logout
+            </a>
+          </div>
+        </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="mobile-nav" id="mobileNav">
+      <a href="dashboard.html" class="mobile-nav-link">Dashboard</a>
+      <a href="flight-detail.html" class="mobile-nav-link">Flights</a>
+      <a href="map.html" class="mobile-nav-link">Route Map</a>
+      <a href="schedule.html" class="mobile-nav-link active">Schedule</a>
+      <a href="notifications.html" class="mobile-nav-link">Notifications</a>
+      <a href="profile.html" class="mobile-nav-link">Profile</a>
+      <a href="#" class="mobile-nav-link mobile-logout" id="mobileLogout">Logout</a>
+    </div>
+  </nav>
+
+  <!-- ── Page Content ───────────────────────────────────────────────────── -->
+  <main class="main-content">
+    <header class="dash-header">
+      <div class="header-left">
+        <div>
+          <h1>Flight Schedule</h1>
+          <p class="header-sub">Browse flight activity by date. Click any day to view its timeline.</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="schedule-layout">
+
+      <!-- ── Heatmap ─────────────────────────────────────────────────── -->
+      <div class="heatmap-card">
+        <div class="heatmap-header">
+          <h2>Monthly Flight Activity</h2>
+          <div style="display:flex;align-items:center;gap:20px;flex-wrap:wrap">
+            <div class="heatmap-legend">
+              <span>Less</span>
+              <div class="legend-cells">
+                <div class="legend-cell heat-0"></div>
+                <div class="legend-cell heat-1"></div>
+                <div class="legend-cell heat-2"></div>
+                <div class="legend-cell heat-3"></div>
+                <div class="legend-cell heat-4"></div>
+                <div class="legend-cell heat-5"></div>
+              </div>
+              <span>More</span>
+            </div>
+            <div class="heatmap-nav">
+              <button class="heatmap-nav-btn" id="prevMonth">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </button>
+              <span class="heatmap-month" id="heatmapMonth"></span>
+              <button class="heatmap-nav-btn" id="nextMonth">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Day of week labels -->
+        <div class="heatmap-dow">
+          <span></span>
+          <span>Sun</span><span>Mon</span><span>Tue</span>
+          <span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+
+        <!-- Grid rendered by JS -->
+        <div id="heatmapGrid"></div>
+      </div>
+
+      <!-- ── Timeline ────────────────────────────────────────────────── -->
+      <div class="timeline-card">
+        <div class="timeline-header">
+          <div class="timeline-header-left">
+            <h2>Departures</h2>
+            <span class="selected-date-badge" id="selectedDateBadge">Today</span>
+          </div>
+          <div class="timeline-summary" id="timelineSummary"></div>
+        </div>
+        <div class="timeline-body" id="timelineBody"></div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Tooltip -->
+  <div class="cell-tooltip" id="cellTooltip">
+    <div class="tt-date" id="ttDate"></div>
+    <div class="tt-count" id="ttCount"></div>
+  </div>
+
+  <script>
+    // ── Auth guard ─────────────────────────────────────────────────────
+    if (!localStorage.getItem('fd_isLoggedIn')) window.location.href = 'index.html';
+
+    // ── User info ──────────────────────────────────────────────────────
+    const fullname = localStorage.getItem('fd_fullname') || 'User';
+    const initials = fullname.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+    document.getElementById('userAvatar').textContent = initials;
+    document.getElementById('userName').textContent = fullname;
+
+    // ── Clock ──────────────────────────────────────────────────────────
+    function updateClock() {
+      const now = new Date();
+      const el = document.getElementById('headerClock');
+      if (el) el.textContent = now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    // ── Logout ─────────────────────────────────────────────────────────
+    document.getElementById('logoutBtn').addEventListener('click', e => {
+      e.preventDefault(); localStorage.removeItem('fd_isLoggedIn'); window.location.href = 'index.html';
+    });
+
+    // ── Navbar scroll ──────────────────────────────────────────────────
+    window.addEventListener('scroll', () => document.getElementById('topnav').classList.toggle('scrolled', window.scrollY > 10));
+
+    // ── User dropdown ──────────────────────────────────────────────────
+    document.getElementById('userAvatarBtn').addEventListener('click', () => {
+      document.getElementById('userDropdown').classList.toggle('open');
+    });
+    document.addEventListener('click', e => {
+      if (!document.getElementById('userMenu').contains(e.target))
+        document.getElementById('userDropdown').classList.remove('open');
+    });
+
+    // ── Mobile menu ────────────────────────────────────────────────────
+    document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+      document.getElementById('mobileNav').classList.toggle('open');
+    });
+
+    // ── Flight data ────────────────────────────────────────────────────
+    // Generate realistic flight data spread across the current month ± 1 month
+    const today = new Date();
+    today.setHours(0,0,0,0);
+
+    const airlines   = ['IndiGo','Air India','SpiceJet','Vistara','Akasa Air','GoFirst'];
+    const codes      = ['6E','AI','SG','UK','QP','G8'];
+    const dests      = ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Kolkata','Pune','Goa','Jaipur','Ahmedabad','Srinagar','Kochi','Amritsar','Nagpur','Varanasi'];
+    const statuses   = ['on-time','on-time','on-time','delayed','boarding','landed','cancelled'];
+    const gates      = ['A2','A5','A9','A11','B4','B8','B12','C2','C7','C9','D1','D6','D17','D21','D22'];
+    const aircrafts  = ['Airbus A320','Boeing 737','Airbus A321','Boeing 787'];
+
+    function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+    function seededRand(seed) {
+      let s = seed;
+      return function() {
+        s = (s * 9301 + 49297) % 233280;
+        return s / 233280;
+      };
+    }
+
+    // Build a map of date string → array of flights
+    const flightsByDate = {};
+
+    // Generate data for 3 months around today
+    const startDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+    const endDate   = new Date(today.getFullYear(), today.getMonth() + 2, 0);
+
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      const key  = d.toISOString().split('T')[0];
+      const rand = seededRand(d.getTime() / 86400000 | 0);
+      const count = Math.floor(rand() * 18) + 2; // 2–19 flights per day
+      const flights = [];
+      for (let i = 0; i < count; i++) {
+        const r      = seededRand((d.getTime() / 86400000 | 0) * 100 + i);
+        const aIdx   = Math.floor(r() * airlines.length);
+        const hour   = Math.floor(r() * 18) + 5; // 05:00–22:00
+        const minute = Math.floor(r() * 4) * 15;
+        const time   = `${String(hour).padStart(2,'0')}:${String(minute).padStart(2,'0')}`;
+        const status = statuses[Math.floor(r() * statuses.length)];
+        const delayMin = status === 'delayed' ? (Math.floor(r() * 8) + 1) * 5 : 0;
+        let estH = hour, estM = minute + delayMin;
+        if (estM >= 60) { estH++; estM -= 60; }
+        const est = `${String(estH).padStart(2,'0')}:${String(estM).padStart(2,'0')}`;
+        flights.push({
+          id:       `${key}-${i}`,
+          no:       `${codes[aIdx]}${Math.floor(r() * 9000) + 1000}`,
+          airline:  airlines[aIdx],
+          dest:     dests[Math.floor(r() * dests.length)],
+          gate:     gates[Math.floor(r() * gates.length)],
+          sched:    time,
+          est,
+          status,
+          aircraft: aircrafts[Math.floor(r() * aircrafts.length)],
+        });
+      }
+      flights.sort((a, b) => a.sched.localeCompare(b.sched));
+      flightsByDate[key] = flights;
+    }
+
+    // ── Heatmap state ──────────────────────────────────────────────────
+    let viewYear  = today.getFullYear();
+    let viewMonth = today.getMonth();
+    let selectedKey = today.toISOString().split('T')[0];
+
+    function getHeatLevel(count) {
+      if (!count || count === 0) return 0;
+      if (count <= 3)  return 1;
+      if (count <= 6)  return 2;
+      if (count <= 10) return 3;
+      if (count <= 15) return 4;
+      return 5;
+    }
+
+    const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const tooltip = document.getElementById('cellTooltip');
+
+    function renderHeatmap() {
+      document.getElementById('heatmapMonth').textContent = `${MONTHS[viewMonth]} ${viewYear}`;
+      const grid = document.getElementById('heatmapGrid');
+      grid.innerHTML = '';
+
+      const firstDay = new Date(viewYear, viewMonth, 1).getDay(); // 0=Sun
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const totalCells = firstDay + daysInMonth;
+      const weeks = Math.ceil(totalCells / 7);
+
+      // Build grid: weeks as rows (rotate to columns for visual)
+      // We'll use a flex row of week-columns approach
+      const weekColumns = [];
+      for (let w = 0; w < weeks; w++) weekColumns.push([]);
+
+      for (let i = 0; i < weeks * 7; i++) {
+        const dayNum = i - firstDay + 1;
+        const week   = Math.floor(i / 7);
+        const dow    = i % 7;
+        if (dayNum < 1 || dayNum > daysInMonth) {
+          weekColumns[week].push({ empty: true, dow });
+        } else {
+          const d   = new Date(viewYear, viewMonth, dayNum);
+          const key = d.toISOString().split('T')[0];
+          const count = (flightsByDate[key] || []).length;
+          const isToday = key === today.toISOString().split('T')[0];
+          weekColumns[week].push({ dayNum, key, count, isToday, dow });
+        }
+      }
+
+      // Row labels (week numbers) + grid
+      const wrapper = document.createElement('div');
+      wrapper.style.cssText = 'display:flex;gap:3px;';
+
+      // Week label column
+      const labelCol = document.createElement('div');
+      labelCol.style.cssText = 'display:flex;flex-direction:column;gap:3px;width:32px;';
+      for (let w = 0; w < weeks; w++) {
+        const firstCell = weekColumns[w].find(c => !c.empty);
+        const lbl = document.createElement('div');
+        lbl.className = 'heatmap-row-label';
+        lbl.textContent = firstCell ? `W${Math.ceil((firstCell.dayNum + firstDay - 1) / 7)}` : '';
+        labelCol.appendChild(lbl);
+      }
+      wrapper.appendChild(labelCol);
+
+      // Day columns
+      weekColumns.forEach(week => {
+        const col = document.createElement('div');
+        col.style.cssText = 'display:flex;flex-direction:column;gap:3px;flex:1;';
+
+        week.forEach(cell => {
+          const div = document.createElement('div');
+          if (cell.empty) {
+            div.className = 'heatmap-cell empty';
+          } else {
+            const level = getHeatLevel(cell.count);
+            div.className = `heatmap-cell heat-${level}${cell.isToday ? ' today' : ''}${cell.key === selectedKey ? ' selected' : ''}`;
+            div.dataset.key = cell.key;
+            div.dataset.day = cell.dayNum;
+            div.dataset.count = cell.count;
+
+            div.addEventListener('mouseenter', e => {
+              const d = new Date(cell.key + 'T00:00:00');
+              document.getElementById('ttDate').textContent =
+                d.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+              document.getElementById('ttCount').textContent = `${cell.count} flight${cell.count !== 1 ? 's' : ''}`;
+              tooltip.style.display = 'block';
+            });
+            div.addEventListener('mousemove', e => {
+              tooltip.style.left = (e.clientX + 12) + 'px';
+              tooltip.style.top  = (e.clientY - 40) + 'px';
+            });
+            div.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+            div.addEventListener('click', () => {
+              selectedKey = cell.key;
+              renderHeatmap();
+              renderTimeline();
+            });
+          }
+          col.appendChild(div);
+        });
+        wrapper.appendChild(col);
+      });
+
+      grid.appendChild(wrapper);
+    }
+
+    // ── Timeline ───────────────────────────────────────────────────────
+    function getStatusLabel(s) {
+      return { 'on-time':'On Time','delayed':'Delayed','boarding':'Boarding','cancelled':'Cancelled','landed':'Landed' }[s] || s;
+    }
+
+    function renderTimeline() {
+      const flights = flightsByDate[selectedKey] || [];
+      const d = new Date(selectedKey + 'T00:00:00');
+      const isToday = selectedKey === today.toISOString().split('T')[0];
+      const dateStr = isToday ? 'Today' : d.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+      document.getElementById('selectedDateBadge').textContent = dateStr;
+
+      // Summary
+      const onTime    = flights.filter(f => f.status === 'on-time').length;
+      const delayed   = flights.filter(f => f.status === 'delayed').length;
+      const cancelled = flights.filter(f => f.status === 'cancelled').length;
+      document.getElementById('timelineSummary').innerHTML = `
+        <div class="tl-stat"><strong>${flights.length}</strong> flights</div>
+        <div class="tl-stat" style="color:#00d264"><strong>${onTime}</strong> on time</div>
+        <div class="tl-stat" style="color:#ffaa00"><strong>${delayed}</strong> delayed</div>
+        <div class="tl-stat" style="color:#ff4444"><strong>${cancelled}</strong> cancelled</div>
+      `;
+
+      const body = document.getElementById('timelineBody');
+      if (flights.length === 0) {
+        body.innerHTML = `
+          <div class="timeline-empty">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity="0.3">
+              <rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>
+            </svg>
+            <p>No flights scheduled</p>
+            <span>Try selecting a different date on the heatmap</span>
+          </div>`;
+        return;
+      }
+
+      // Group by hour
+      const byHour = {};
+      flights.forEach(f => {
+        const h = f.sched.split(':')[0];
+        if (!byHour[h]) byHour[h] = [];
+        byHour[h].push(f);
+      });
+
+      body.innerHTML = Object.keys(byHour).sort().map((h, i) => `
+        <div class="hour-block" style="animation-delay:${i * 0.05}s">
+          <div class="hour-label">
+            <span>${h}:00 – ${String(parseInt(h)+1).padStart(2,'0')}:00</span>
+          </div>
+          ${byHour[h].map((f, j) => `
+            <div class="tl-flight-card" style="animation-delay:${(i * 0.05 + j * 0.03)}s">
+              <div class="tl-flight-no">${f.no}</div>
+              <div class="tl-route">
+                <div class="tl-dest">${f.dest}</div>
+                <div class="tl-airline">${f.airline}</div>
+              </div>
+              <div class="tl-time">${f.sched}</div>
+              <div class="tl-gate">${f.gate}</div>
+              <span class="status-badge ${f.status}">${getStatusLabel(f.status)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `).join('');
+    }
+
+    // ── Month navigation ───────────────────────────────────────────────
+    document.getElementById('prevMonth').addEventListener('click', () => {
+      viewMonth--;
+      if (viewMonth < 0) { viewMonth = 11; viewYear--; }
+      renderHeatmap();
+    });
+    document.getElementById('nextMonth').addEventListener('click', () => {
+      viewMonth++;
+      if (viewMonth > 11) { viewMonth = 0; viewYear++; }
+      renderHeatmap();
+    });
+
+    // ── Init ───────────────────────────────────────────────────────────
+    renderHeatmap();
+    renderTimeline();
+  </script>
+</body>
+</html>
