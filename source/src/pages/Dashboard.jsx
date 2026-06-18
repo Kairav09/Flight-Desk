@@ -142,10 +142,12 @@ export default function Dashboard() {
   async function loadFlights() {
     setLastUpdated("Fetching live flights...");
     try {
-      const d = new Date();
-      const dateStr = d.toLocaleDateString('en-CA'); // YYYY-MM-DD local
+      const now = new Date();
+      const later = new Date(now.getTime() + 11 * 60 * 60 * 1000);
+      const start = now.toISOString().slice(0, 16);
+      const end = later.toISOString().slice(0, 16);
       const res = await fetch(
-        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/DEL/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
+        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/DEL/${start}/${end}?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
         {
           headers: {
             "x-rapidapi-host": "aerodatabox.p.rapidapi.com",

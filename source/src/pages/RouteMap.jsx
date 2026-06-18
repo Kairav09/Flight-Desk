@@ -126,10 +126,12 @@ export default function RouteMap() {
     }
 
     try {
-      const d = new Date();
-      const dateStr = d.toLocaleDateString('en-CA');
+      const now = new Date();
+      const later = new Date(now.getTime() + 11 * 60 * 60 * 1000);
+      const start = now.toISOString().slice(0, 16);
+      const end = later.toISOString().slice(0, 16);
       const res = await fetch(
-        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${hubAirport}/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
+        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${hubAirport}/${start}/${end}?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
         {
           headers: {
             "x-rapidapi-host": "aerodatabox.p.rapidapi.com",
