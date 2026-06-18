@@ -180,7 +180,6 @@ export default function Auth() {
                     </svg>
                     <input
                       type="text"
-                      placeholder="your@email.com"
                       value={loginId}
                       onChange={(e) => setLoginId(e.target.value)}
                       required
@@ -268,7 +267,6 @@ export default function Auth() {
                       </svg>
                       <input
                         type="text"
-                        placeholder="John"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         required
@@ -300,7 +298,6 @@ export default function Auth() {
                       </svg>
                       <input
                         type="text"
-                        placeholder="Doe"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         required
@@ -328,7 +325,6 @@ export default function Auth() {
                     </svg>
                     <input
                       type="text"
-                      placeholder="johndoe"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       required
@@ -353,7 +349,6 @@ export default function Auth() {
                     </svg>
                     <input
                       type="email"
-                      placeholder="your@email.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
@@ -382,7 +377,6 @@ export default function Auth() {
                     </svg>
                     <input
                       type="password"
-                      placeholder="Min. 6 characters"
                       value={signupPw}
                       onChange={(e) => setSignupPw(e.target.value)}
                       required
