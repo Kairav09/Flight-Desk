@@ -140,6 +140,7 @@ export default function Landing() {
         localStorage.setItem("fd_" + k, user[k]),
       );
       localStorage.setItem("fd_isLoggedIn", "true");
+      document.body.style.overflow = "";
       navigate("/dashboard");
     } else {
       setLoginError(true);
