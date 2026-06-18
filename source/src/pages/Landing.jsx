@@ -748,7 +748,6 @@ export default function Landing() {
               <label>Username or Email</label>
               <input
                 type="text"
-                placeholder="your@email.com"
                 value={loginId}
                 onChange={(e) => setLoginId(e.target.value)}
                 required
@@ -764,7 +763,6 @@ export default function Landing() {
               </label>
               <input
                 type="password"
-                placeholder="••••••••"
                 value={loginPw}
                 onChange={(e) => setLoginPw(e.target.value)}
                 required
@@ -817,7 +815,6 @@ export default function Landing() {
               <label>Full Name</label>
               <input
                 type="text"
-                placeholder="John Doe"
                 value={fullname}
                 onChange={(e) => setFullname(e.target.value)}
                 required
@@ -828,7 +825,6 @@ export default function Landing() {
               <label>Username</label>
               <input
                 type="text"
-                placeholder="johndoe"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
@@ -839,7 +835,6 @@ export default function Landing() {
               <label>Email</label>
               <input
                 type="email"
-                placeholder="your@email.com"
                 value={signupEmail}
                 onChange={(e) => setSignupEmail(e.target.value)}
                 required
@@ -850,7 +845,6 @@ export default function Landing() {
               <label>Password</label>
               <input
                 type="password"
-                placeholder="Min. 6 characters"
                 value={signupPw}
                 onChange={(e) => setSignupPw(e.target.value)}
                 required
