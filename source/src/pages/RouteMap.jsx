@@ -126,23 +126,31 @@ export default function RouteMap() {
     }
 
     try {
+      const d = new Date();
+      const dateStr = d.toLocaleDateString('en-CA');
       const res = await fetch(
-        `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=${hubAirport}&limit=100`,
+        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${hubAirport}/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
+        {
+          headers: {
+            "x-rapidapi-host": "aerodatabox.p.rapidapi.com",
+            "x-rapidapi-key": "9cccc20ab8mshf575553f2cc35e2p1ef844jsnf578fe4eba25"
+          }
+        }
       );
       const json = await res.json();
-      if (!json.data) throw new Error("No data");
+      if (!json.departures) throw new Error("No data");
 
-      const flights = json.data.map((f, i) => ({
+      const flights = json.departures.map((f, i) => ({
         id: i + 1,
-        no: f.flight?.iata || f.flight?.icao || "N/A",
+        no: f.number || "N/A",
         airline: f.airline?.name || "Unknown",
-        originCode: f.departure?.iata || "",
-        destCode: f.arrival?.iata || "",
-        origin: f.departure?.airport || "Unknown",
-        dest: f.arrival?.airport || "Unknown",
-        depTime: formatTime(f.departure?.scheduled),
-        arrTime: formatTime(f.arrival?.scheduled),
-        status: normalizeStatus(f.flight_status),
+        originCode: hubAirport,
+        destCode: f.arrival?.airport?.iata || "",
+        origin: hubAirport,
+        dest: f.arrival?.airport?.name || "Unknown",
+        depTime: formatTime(f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc),
+        arrTime: formatTime(f.arrival?.scheduledTime?.local || f.arrival?.scheduledTime?.utc),
+        status: normalizeStatus(f.status),
         gate: f.departure?.gate || "--",
         terminal: f.departure?.terminal || "--",
       }));

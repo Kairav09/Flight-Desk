@@ -142,26 +142,34 @@ export default function Dashboard() {
   async function loadFlights() {
     setLastUpdated("Fetching live flights...");
     try {
+      const d = new Date();
+      const dateStr = d.toLocaleDateString('en-CA'); // YYYY-MM-DD local
       const res = await fetch(
-        `https://api.aviationstack.com/v1/flights?access_key=${API_KEY}&dep_iata=DEL`,
+        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/DEL/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=Departure&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
+        {
+          headers: {
+            "x-rapidapi-host": "aerodatabox.p.rapidapi.com",
+            "x-rapidapi-key": "9cccc20ab8mshf575553f2cc35e2p1ef844jsnf578fe4eba25"
+          }
+        }
       );
       const data = await res.json();
-      if (!data.data) throw new Error("No data");
-      const mapped = data.data.slice(0, 50).map((f, i) => ({
+      if (!data.departures) throw new Error("No data");
+      const mapped = data.departures.slice(0, 50).map((f, i) => ({
         id: i + 1,
-        no: f.flight?.iata || f.flight?.icao || "N/A",
+        no: f.number || "N/A",
         airline: f.airline?.name || "Unknown Airline",
-        origin: f.departure?.airport || f.departure?.iata || "Unknown",
-        originCode: f.departure?.iata || "",
-        dest: f.arrival?.airport || f.arrival?.iata || "Unknown",
-        destCode: f.arrival?.iata || "",
-        date: formatDate(f.departure?.scheduled),
+        origin: "Delhi",
+        originCode: "DEL",
+        dest: f.arrival?.airport?.name || f.arrival?.airport?.iata || "Unknown",
+        destCode: f.arrival?.airport?.iata || "",
+        date: formatDate(f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc),
         gate: f.departure?.gate || "--",
-        sched: formatTime(f.departure?.scheduled),
-        est: formatTime(f.departure?.estimated),
-        status: normalizeStatus(f.flight_status),
+        sched: formatTime(f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc),
+        est: formatTime(f.departure?.revisedTime?.local || f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc),
+        status: normalizeStatus(f.status),
         terminal: f.departure?.terminal || "--",
-        aircraft: f.aircraft?.registration || f.aircraft?.icao24 || "Unknown",
+        aircraft: f.aircraft?.model || "Unknown",
         duration: "--",
       }));
       setFlights(mapped);

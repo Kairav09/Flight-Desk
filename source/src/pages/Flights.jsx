@@ -158,34 +158,44 @@ export default function Flights() {
     }
 
     try {
-      const param = directionFilter === "dep" ? "dep_iata" : "arr_iata";
+      const d = new Date();
+      const dateStr = d.toLocaleDateString('en-CA');
+      const dir = directionFilter === "dep" ? "Departure" : "Arrival";
+      
       const res = await fetch(
-        `http://api.aviationstack.com/v1/flights?access_key=${API_KEY}&${param}=${airportFilter}&limit=100`,
+        `https://aerodatabox.p.rapidapi.com/flights/airports/iata/${airportFilter}/${dateStr}T00:00/${dateStr}T23:59?withLeg=true&direction=${dir}&withCancelled=true&withCodeshared=true&withCargo=false&withPrivate=false`,
+        {
+          headers: {
+            "x-rapidapi-host": "aerodatabox.p.rapidapi.com",
+            "x-rapidapi-key": "9cccc20ab8mshf575553f2cc35e2p1ef844jsnf578fe4eba25"
+          }
+        }
       );
       const json = await res.json();
-      if (!json.data || json.data.length === 0) throw new Error("No data received");
+      const list = directionFilter === "dep" ? json.departures : json.arrivals;
+      if (!list || list.length === 0) throw new Error("No data received");
 
-      const mapped = json.data.map((f, i) => ({
+      const mapped = list.map((f, i) => ({
         id: i + 1,
-        no: f.flight?.iata || f.flight?.icao || "N/A",
+        no: f.number || "N/A",
         airline: f.airline?.name || "Unknown Airline",
         airlineCode: f.airline?.iata || "",
-        origin: f.departure?.airport || "Unknown",
-        originCode: f.departure?.iata || "",
-        dest: f.arrival?.airport || "Unknown",
-        destCode: f.arrival?.iata || "",
-        date: formatDate(f.departure?.scheduled),
-        rawDate: f.departure?.scheduled || "",
-        gate: f.departure?.gate || "--",
-        sched: formatTime(f.departure?.scheduled),
-        rawSched: f.departure?.scheduled || "",
-        est: formatTime(f.departure?.estimated || f.departure?.actual),
-        arrSched: formatTime(f.arrival?.scheduled),
-        arrEst: formatTime(f.arrival?.estimated || f.arrival?.actual),
-        status: normalizeStatus(f.flight_status),
-        terminal: f.departure?.terminal || "--",
-        aircraft: f.aircraft?.registration || f.aircraft?.iata || "--",
-        aircraftType: f.aircraft?.iata || "--",
+        origin: directionFilter === "dep" ? airportFilter : (f.departure?.airport?.name || f.departure?.airport?.iata || "Unknown"),
+        originCode: directionFilter === "dep" ? airportFilter : (f.departure?.airport?.iata || ""),
+        dest: directionFilter === "dep" ? (f.arrival?.airport?.name || f.arrival?.airport?.iata || "Unknown") : airportFilter,
+        destCode: directionFilter === "dep" ? (f.arrival?.airport?.iata || "") : airportFilter,
+        date: formatDate(f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc || f.arrival?.scheduledTime?.local),
+        rawDate: f.departure?.scheduledTime?.local || f.arrival?.scheduledTime?.local || "",
+        gate: directionFilter === "dep" ? (f.departure?.gate || "--") : (f.arrival?.gate || "--"),
+        sched: formatTime(f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc),
+        rawSched: f.departure?.scheduledTime?.local || f.departure?.scheduledTime?.utc || "",
+        est: formatTime(f.departure?.revisedTime?.local || f.departure?.scheduledTime?.local),
+        arrSched: formatTime(f.arrival?.scheduledTime?.local || f.arrival?.scheduledTime?.utc),
+        arrEst: formatTime(f.arrival?.revisedTime?.local || f.arrival?.scheduledTime?.local),
+        status: normalizeStatus(f.status),
+        terminal: directionFilter === "dep" ? (f.departure?.terminal || "--") : (f.arrival?.terminal || "--"),
+        aircraft: f.aircraft?.model || "--",
+        aircraftType: f.aircraft?.model || "--",
       }));
 
       // Cache the result
