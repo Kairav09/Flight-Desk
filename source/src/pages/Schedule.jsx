@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
+import { useNavigate, Link } from "react-router-dom";
 import "../styles/schedule.css";
+import logoImg from "../assets/logo.png";
 
 // ── Flight data generation ──────────────────────────────────────────────────
 const airlines = ['IndiGo', 'Air India', 'SpiceJet', 'Vistara', 'Akasa Air', 'GoFirst'];
@@ -24,6 +26,46 @@ function getStatusLabel(s) {
 }
 
 export default function Schedule() {
+  const navigate = useNavigate();
+
+  // Auth guard
+  useEffect(() => {
+    if (!localStorage.getItem("fd_isLoggedIn")) navigate("/");
+  }, []);
+
+  const fullname = localStorage.getItem("fd_fullname") || "User";
+  const initials = fullname.split(" ").map(w => w[0]).join("").toUpperCase().slice(0, 2);
+
+  const [clock, setClock] = useState("");
+  useEffect(() => {
+    const tick = () =>
+      setClock(
+        new Date().toLocaleTimeString("en-IN", {
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        })
+      );
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  function handleLogout(e) {
+    e.preventDefault();
+    localStorage.removeItem("fd_isLoggedIn");
+    navigate("/");
+  }
+
   const today = useMemo(() => {
     const d = new Date();
     d.setHours(0, 0, 0, 0);
@@ -193,14 +235,101 @@ export default function Schedule() {
 
   return (
     <>
-      <header className="dash-header">
-        <div className="header-left">
-          <div>
-            <h1>Flight Schedules</h1>
-            <p className="header-sub">Browse flight activity by date. Click any day to view its timeline.</p>
+      <nav className={`topnav${scrolled ? " scrolled" : ""}`}>
+        <div className="topnav-inner">
+          <Link to="/dashboard" className="topnav-logo">
+            <div className="logo-mark">
+              <img src={logoImg} alt="FlightDesk" width="34" height="34" />
+            </div>
+            <span className="logo-text">
+              Flight<span className="logo-accent">Desk</span>
+            </span>
+          </Link>
+          <div className="topnav-links">
+            <Link to="/dashboard" className="topnav-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" stroke="currentColor" strokeWidth="2" />
+              </svg>
+              Dashboard
+            </Link>
+            <Link to="/flights" className="topnav-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z" stroke="currentColor" strokeWidth="1.5" />
+              </svg>
+              Flights
+            </Link>
+            <Link to="/map" className="topnav-link">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" strokeWidth="2" />
+                <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="2" />
+              </svg>
+              Route Map
+            </Link>
+            <Link to="/schedule" className="topnav-link active">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none">
+                <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                <path d="M16 2v4M8 2v4M3 10h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              Schedule
+            </Link>
+          </div>
+
+          <div className="topnav-right">
+            <div className="live-indicator">
+              <span className="live-dot"></span>Live
+            </div>
+            <div className="header-clock">{clock}</div>
+            <button
+              className="topnav-icon-btn"
+              onClick={() => navigate("/notifications")}
+            >
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <span className="icon-badge">3</span>
+            </button>
+            <button
+              className="user-avatar-btn"
+              onClick={() => navigate("/profile")}
+              title="Profile"
+            >
+              <span className="user-avatar">{initials}</span>
+            </button>
+            <button className="topnav-icon-btn" onClick={handleLogout} title="Logout">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /><path d="M16 17l5-5-5-5M21 12H9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <button
+              className="mobile-menu-btn"
+              onClick={() => setMobileOpen((o) => !o)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M3 12h18M3 6h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
         </div>
-      </header>
+        <div className={`mobile-nav${mobileOpen ? " open" : ""}`}>
+          <a href="/dashboard" className="mobile-nav-link">Dashboard</a>
+          <a href="/flights" className="mobile-nav-link">Flights</a>
+          <a href="/map" className="mobile-nav-link">Route Map</a>
+          <a href="/schedule" className="mobile-nav-link active">Schedule</a>
+          <a href="/profile" className="mobile-nav-link">Profile</a>
+          <a href="#" className="mobile-nav-link mobile-logout" onClick={handleLogout}>Logout</a>
+        </div>
+      </nav>
+
+      <main className="main-content">
+        <header className="dash-header">
+          <div className="header-left">
+            <div>
+              <h1>Flight Schedules</h1>
+              <p className="header-sub">Browse flight activity by date. Click any day to view its timeline.</p>
+            </div>
+          </div>
+        </header>
 
       <div className="schedule-layout">
         {/* Heatmap Card */}
@@ -292,6 +421,7 @@ export default function Schedule() {
           <div className="tt-count">{tooltip.count}</div>
         </div>
       )}
+      </main>
     </>
   );
 }
