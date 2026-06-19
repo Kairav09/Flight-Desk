@@ -40,7 +40,7 @@
 |---|---|
 | **Frontend Framework** | React.js (Hooks, JSX, Function Components) |
 | **Build Tool** | Vite (HMR, tree-shaking, minification) |
-| **Styling** | Vanilla CSS with custom design system |
+| **Styling** | CSS |
 | **Map Integration** | Leaflet.js |
 | **Flight Data API** | AeroDataBox (via RapidAPI) |
 | **Routing** | React Router v6 |
