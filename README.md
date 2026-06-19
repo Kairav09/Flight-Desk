@@ -125,7 +125,7 @@ If the API quota is exhausted, the app automatically falls back to realistic moc
 ### Kairav Vashi — 2520030582 (Team Lead)
 - **CO3 — React Component Model:** All React components, hooks (`useState`, `useEffect`, `useCallback`), controlled inputs, component composition
 - **CO4 — State Architecture & API Integration:** State co-location, derived state, async data flow, caching, container-presenter pattern, API layer, localStorage persistence
-- **CO5 — Routing, Forms, Accessibility & Performance:** SPA routing, protected routes, form validation, `useMemo`, lazy map init, key-based rendering, semantic HTML
+- **CO5 — Routing, Forms, Accessibility & Performance:** SPA routing, protected routes, form validation, `useMemo`, lazy map init, semantic HTML
 
 ### U. Pranav Varma — 2520030351
 - **CO1 — Foundations of Front-End Engineering:** Project scaffolding, folder structure, declarative UI, unidirectional data flow, Virtual DOM
