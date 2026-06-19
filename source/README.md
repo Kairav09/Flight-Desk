@@ -120,24 +120,17 @@ If the API quota is exhausted, the app automatically falls back to realistic moc
 
 ## 👥 Team & Contributions
 
-**Course:** Front End Development Frameworks and UI Engineering (25CS1201E) — 2025-26, Term-III  
-**Section:** 10
+**Course:** Front End Development Frameworks and UI Engineering (25CS1201E) — 2025-26, Term-III | **Section:** 10
 
 ### Kairav Vashi — 2520030582 (Team Lead)
-
-| Module | Responsibilities |
-|---|---|
-| **CO3 — React Component Model** | Designed and implemented all React components across FlightDesk including the flight status dashboard, notification panel, and flight detail view as deterministic UI functions using props and state. Implemented React hooks (`useState`, `useEffect`, `useCallback`) for lifecycle management, controlled form inputs for search and filters, and component composition patterns for the sidebar and reusable card components. |
-| **CO4 — State Architecture & API Integration** | Managed application-wide state including flight data, user session, and notification subscriptions. Implemented state co-location strategy, derived state for filtered flight lists, async data flow for simulated live polling, stale state handling, and the container-presenter pattern separating data logic from UI rendering. Designed the API service layer and localStorage-based persistence. |
-| **CO5 — Routing, Forms, Accessibility & Performance** | Implemented SPA routing between all pages (Dashboard, Flights, Route Map, Schedule, Notifications, Profile) including protected routes that redirect unauthenticated users. Engineered login, signup, forgot password, and profile update forms with full validation pipelines. Applied performance optimizations including memoization (`useMemo`), lazy map initialization, and key-based rendering for flight tables. Ensured accessibility compliance with semantic HTML, keyboard navigation, and color contrast standards. |
+- **CO3 — React Component Model:** All React components, hooks (`useState`, `useEffect`, `useCallback`), controlled inputs, component composition
+- **CO4 — State Architecture & API Integration:** State co-location, derived state, async data flow, caching, container-presenter pattern, API layer, localStorage persistence
+- **CO5 — Routing, Forms, Accessibility & Performance:** SPA routing, protected routes, form validation, `useMemo`, lazy map init, key-based rendering, semantic HTML, keyboard nav
 
 ### U. Pranav Varma — 2520030351
-
-| Module | Responsibilities |
-|---|---|
-| **CO1 — Foundations of Front-End Engineering** | Established the architectural foundation of FlightDesk including declarative UI principles, component-driven structure, unidirectional data flow, and Virtual DOM rationale. Responsible for initial project scaffolding, folder organization, and ensuring the rendering pipeline follows framework best practices. |
-| **CO2 — JavaScript & TypeScript Engineering** | Implemented all core JavaScript engineering including ES6+ features (destructuring, spread, arrow functions, modules), closures for state encapsulation, async/await for polling and data fetch simulation, and functional programming patterns across utility functions. Built the authentication logic, localStorage helpers, and input validation utilities. |
-| **CO6 — Build Systems, Testing, CI/CD & Deployment** | Set up the Vite build system, configured environment variables, and managed asset optimization including tree-shaking and minification. Established the Vercel deployment pipeline, production monitoring, and Lighthouse performance evaluation. Configured linting and formatting to maintain code quality. |
+- **CO1 — Foundations of Front-End Engineering:** Project scaffolding, folder structure, declarative UI, unidirectional data flow, Virtual DOM
+- **CO2 — JavaScript & TypeScript Engineering:** ES6+ features, closures, async/await, functional patterns, auth logic, validation utilities
+- **CO6 — Build Systems, Testing, CI/CD & Deployment:** Vite config, tree-shaking, Vercel CI/CD pipeline, Lighthouse audits, linting
 
 ---
 
