@@ -140,7 +140,3 @@ If the API quota is exhausted, the app automatically falls back to realistic moc
 | **CO6 — Build Systems, Testing, CI/CD & Deployment** | Set up the Vite build system, configured environment variables, and managed asset optimization including tree-shaking and minification. Established the Vercel deployment pipeline, production monitoring, and Lighthouse performance evaluation. Configured linting and formatting to maintain code quality. |
 
 ---
-
-## 📄 License
-
-This project was built as an academic submission for the FEDF course at SRM University.
