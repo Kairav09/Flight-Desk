@@ -39,13 +39,13 @@
 | Layer | Technology |
 |---|---|
 | **Frontend Framework** | React.js (Hooks, JSX, Function Components) |
-| **Build Tool** | Vite (HMR, tree-shaking, minification) |
+| **Build Tool** | Vite |
 | **Styling** | CSS |
 | **Map Integration** | Leaflet.js |
 | **Flight Data API** | AeroDataBox (via RapidAPI) |
 | **Routing** | React Router v6 |
 | **Persistence** | localStorage (session, cache, user data) |
-| **Deployment** | Vercel (CI/CD, production hosting) |
+| **Deployment** | Vercel |
 | **Version Control** | Git + GitHub |
 
 ---
