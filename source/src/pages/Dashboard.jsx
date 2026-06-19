@@ -411,7 +411,7 @@ export default function Dashboard() {
                   strokeLinecap="round"
                 />
               </svg>
-              <span className="icon-badge">3</span>
+              <span className="icon-badge">2</span>
             </button>
             <button
               className="user-avatar-btn"
