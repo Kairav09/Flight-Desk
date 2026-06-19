@@ -133,7 +133,3 @@ If the API quota is exhausted, the app automatically falls back to realistic moc
 - **CO6 — Build Systems, Testing, CI/CD & Deployment:** Vite config, tree-shaking, Vercel CI/CD pipeline, Lighthouse audits, linting
 
 ---
-
-## 📄 License
-
-This project was built as an academic submission for the FEDF course at SRM University.
